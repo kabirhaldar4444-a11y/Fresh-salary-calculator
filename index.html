@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ApexSalary — Professional Salary Calculator & Payroll Compliance</title>
+  <meta name="description" content="Premium, mathematically exact CTC and Salary Calculator based on official Excel models with Provident Fund, Gratuity (15/26/12), Code on Wages 50% compliance check, and Take-Home pay estimation.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Ambient background glow elements -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="logo-mark">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="2"/>
+          <line x1="12" y1="8" x2="12" y2="16"/>
+          <line x1="8" y1="10" x2="16" y2="10"/>
+          <circle cx="12" cy="12" r="3" stroke-opacity="0.3"/>
+        </svg>
+      </div>
+      <div class="header-titles">
+        <div class="logo-text-row">
+          <h1 class="logo-text">ApexSalary <span class="badge-pro">PRO CTC</span></h1>
+          <span class="file-tag" title="Loaded from Salary Calculater.xlsx">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+            Salary Calculater.xlsx
+          </span>
+        </div>
+        <p class="tagline">Enterprise-grade CTC breakdown, statutory PF, Gratuity & Wage Code compliance</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <!-- Calculation Mode selector -->
+      <div class="mode-pill" title="Toggle calculation convention">
+        <span class="pill-label">Math Model:</span>
+        <select id="mathModeSelect" class="clean-select" aria-label="Calculation Math Model">
+          <option value="excel">Excel Sheet 1:1 Math</option>
+          <option value="standard" selected>Standard Corporate CTC</option>
+        </select>
+        <button id="mathInfoBtn" class="icon-btn-info" title="Explain Math Differences">ℹ</button>
+      </div>
+
+      <!-- Currency format toggle -->
+      <div class="currency-toggle" id="currencyToggleContainer">
+        <button id="currInrBtn" class="pill-btn active" title="Indian Numbering (Lakhs/Crores)">₹ INR</button>
+        <button id="currUsdBtn" class="pill-btn" title="International Standard ($)">$ USD</button>
+      </div>
+
+      <!-- Excel Export / Print CTA -->
+      <div class="export-dropdown-wrapper">
+        <button id="exportExcelBtn" class="btn btn-emerald" title="Export this calculation to Excel">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export Excel
+        </button>
+        <button id="printAnnexureBtn" class="btn btn-secondary" title="View & Print Official CTC Annexure">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Print Annexure
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Quick Presets Bar -->
+  <section class="presets-bar" aria-label="Salary Presets">
+    <span class="presets-title">Quick CTC Presets:</span>
+    <div class="preset-buttons">
+      <button class="preset-chip" data-ctc="50000" title="Excel File Default (50k)">Excel File (₹50k)</button>
+      <button class="preset-chip" data-ctc="350000">₹3.5 LPA</button>
+      <button class="preset-chip" data-ctc="600000" title="₹50k / month">₹6.0 LPA (₹50k/mo)</button>
+      <button class="preset-chip" data-ctc="1000000">₹10 LPA</button>
+      <button class="preset-chip active" data-ctc="1200000">₹12 LPA (₹1L/mo)</button>
+      <button class="preset-chip" data-ctc="1800000">₹18 LPA</button>
+      <button class="preset-chip" data-ctc="2500000">₹25 LPA</button>
+      <button class="preset-chip" data-ctc="5000000">₹50 LPA</button>
+    </div>
+    <div class="excel-import-wrap">
+      <input type="file" id="excelFileInput" accept=".xlsx, .xls" class="hidden-file-input">
+      <button id="importExcelBtn" class="chip-import" title="Upload another Excel file">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Load Custom Excel
+      </button>
+      <button id="resetDefaultsBtn" class="chip-reset" title="Reset to Original Excel Values">Reset to Excel</button>
+    </div>
+  </section>
+
+  <!-- Main Workspace -->
+  <main class="app-layout">
+    
+    <!-- LEFT COLUMN: INPUT CONTROLS -->
+    <aside class="calculator-inputs-card">
+      <div class="card-header-with-badge">
+        <h2 class="card-title">Salary Parameters</h2>
+        <span class="badge-accent">Inputs (B4:B13)</span>
+      </div>
+
+      <!-- CTC Input Section -->
+      <div class="input-group ctc-hero-group">
+        <div class="label-with-mode">
+          <label for="ctcInput" class="input-label font-bold">Cost To Company (CTC)</label>
+          <div class="input-period-toggle">
+            <button type="button" id="ctcAnnualToggle" class="period-chip active">Annual</button>
+            <button type="button" id="ctcMonthlyToggle" class="period-chip">Monthly</button>
+          </div>
+        </div>
+        
+        <div class="hero-input-wrapper">
+          <span class="currency-prefix" id="currSymbolPrefix">₹</span>
+          <input type="number" id="ctcInput" class="hero-number-input" value="1200000" min="10000" max="100000000" step="10000" placeholder="e.g. 1200000">
+        </div>
+        
+        <div class="slider-row">
+          <input type="range" id="ctcSlider" min="50000" max="5000000" step="25000" value="1200000" class="styled-slider">
+        </div>
+        
+        <div class="amount-words" id="ctcInWords">Twelve Lakh Rupees Only</div>
+      </div>
+
+      <hr class="card-divider">
+
+      <!-- Salary Structure Sliders -->
+      <div class="parameters-grid">
+        
+        <!-- Basic Salary % of CTC -->
+        <div class="param-box">
+          <div class="param-label-row">
+            <label for="basicPercentInput" class="param-title">Basic Salary % of CTC</label>
+            <span class="excel-cell-ref">B5</span>
+          </div>
+          <div class="param-control-row">
+            <input type="range" id="basicPercentSlider" min="20" max="70" step="1" value="50" class="styled-slider flex-1">
+            <div class="input-with-unit">
+              <input type="number" id="basicPercentInput" value="50" min="10" max="90" step="1" class="small-input">
+              <span class="unit">%</span>
+            </div>
+          </div>
+          <div class="param-hint">Starting point; Indian wage code recommends ≥ 50%</div>
+        </div>
+
+        <!-- HRA % of Basic -->
+        <div class="param-box">
+          <div class="param-label-row">
+            <label for="hraPercentInput" class="param-title">HRA % of Basic</label>
+            <span class="excel-cell-ref">B6</span>
+          </div>
+          <div class="param-control-row">
+            <input type="range" id="hraPercentSlider" min="10" max="60" step="5" value="40" class="styled-slider flex-1">
+            <div class="input-with-unit">
+              <input type="number" id="hraPercentInput" value="40" min="0" max="100" step="1" class="small-input">
+              <span class="unit">%</span>
+            </div>
+          </div>
+          <div class="quick-preset-chips">
+            <button type="button" class="mini-chip" id="hraMetroBtn" title="50% for Metro cities (Delhi, Mumbai, Kolkata, Chennai)">Metro (50%)</button>
+            <button type="button" class="mini-chip active" id="hraNonMetroBtn" title="40% for Non-Metro cities">Non-Metro (40%)</button>
+          </div>
+        </div>
+
+        <!-- Site / Project Allowance -->
+        <div class="param-box">
+          <div class="param-label-row">
+            <label for="siteAllowanceInput" class="param-title">Site / Project Allowance</label>
+            <span class="excel-cell-ref">B7</span>
+          </div>
+          <div class="input-with-symbol">
+            <span class="currency-tag">₹</span>
+            <input type="number" id="siteAllowanceInput" value="0" min="0" step="5000" class="regular-input" placeholder="0">
+            <span class="freq-tag">/year</span>
+          </div>
+        </div>
+
+        <!-- Other Benefits -->
+        <div class="param-box">
+          <div class="param-label-row">
+            <label for="otherBenefitsInput" class="param-title">Other Benefits / Perks</label>
+            <span class="excel-cell-ref">B8</span>
+          </div>
+          <div class="input-with-symbol">
+            <span class="currency-tag">₹</span>
+            <input type="number" id="otherBenefitsInput" value="0" min="0" step="5000" class="regular-input" placeholder="0">
+            <span class="freq-tag">/year</span>
+          </div>
+        </div>
+
+        <!-- Site / Project Bonus (Excel Row 25) -->
+        <div class="param-box highlight-box">
+          <div class="param-label-row">
+            <label for="projectBonusInput" class="param-title">Site / Project Completion Bonus</label>
+            <span class="excel-cell-ref">B25</span>
+          </div>
+          <div class="input-with-symbol">
+            <span class="currency-tag">₹</span>
+            <input type="number" id="projectBonusInput" value="500000" min="0" step="25000" class="regular-input" placeholder="e.g. 500000">
+            <span class="freq-tag">variable</span>
+          </div>
+          <div class="param-hint">Amount calculated on project milestone / completion</div>
+        </div>
+
+      </div>
+
+      <!-- Statutory & Retirals Config Accordion -->
+      <div class="accordion-item" id="statutoryAccordion">
+        <button type="button" class="accordion-header" id="statutoryToggleBtn">
+          <span class="accordion-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Statutory Rules & Provisions (PF, Gratuity)
+          </span>
+          <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+
+        <div class="accordion-content" id="statutoryContent">
+          <!-- PF Applicable -->
+          <div class="control-row">
+            <div class="control-text">
+              <span class="control-title">PF Applicable?</span>
+              <span class="control-desc">Cell B9</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="pfApplicableCheck" checked>
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <!-- PF Rate -->
+          <div class="control-row">
+            <div class="control-text">
+              <span class="control-title">PF Contribution Rate</span>
+              <span class="control-desc">Cell B10 (Statutory 12%)</span>
+            </div>
+            <div class="input-with-unit small">
+              <input type="number" id="pfRateInput" value="12" min="1" max="25" step="0.5" class="small-input">
+              <span class="unit">%</span>
+            </div>
+          </div>
+
+          <!-- PF Wage Ceiling -->
+          <div class="control-row">
+            <div class="control-text">
+              <span class="control-title">PF Monthly Wage Ceiling</span>
+              <span class="control-desc">Cell B11 (Statutory ₹15,000)</span>
+            </div>
+            <div class="input-with-symbol small">
+              <span class="currency-tag">₹</span>
+              <input type="number" id="pfCeilingInput" value="15000" min="0" step="1000" class="small-input">
+            </div>
+          </div>
+
+          <!-- PF on Higher Wages -->
+          <div class="control-row">
+            <div class="control-text">
+              <span class="control-title">PF on Higher Wages?</span>
+              <span class="control-desc">Cell B12 (Yes = full Basic; No = ₹15k cap)</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="pfHigherWageCheck">
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <!-- Gratuity Rate -->
+          <div class="control-row">
+            <div class="control-text">
+              <span class="control-title">Gratuity Rate</span>
+              <span class="control-desc">Cell B13 (15/26/12 = 4.8077%)</span>
+            </div>
+            <div class="input-with-unit small">
+              <input type="number" id="gratuityRateInput" value="4.8077" min="0" max="15" step="0.0001" class="small-input">
+              <span class="unit">%</span>
+            </div>
+          </div>
+
+          <!-- Professional Tax Deduction -->
+          <div class="control-row">
+            <div class="control-text">
+              <span class="control-title">Professional Tax (PT)</span>
+              <span class="control-desc">Standard state tax (₹200/mo)</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="ptApplicableCheck" checked>
+              <span class="slider round"></span>
+            </label>
+          </div>
+
+          <!-- Income Tax Regime for Take-Home -->
+          <div class="control-row">
+            <div class="control-text">
+              <span class="control-title">Tax Regime for Take-Home</span>
+              <span class="control-desc">FY 2024-25 / 2025-26</span>
+            </div>
+            <select id="taxRegimeSelect" class="clean-select small">
+              <option value="new" selected>New Regime (Rebate up to ₹7.75L)</option>
+              <option value="old">Old Regime</option>
+              <option value="none">Zero / Exempt (Gross Take-Home)</option>
+            </select>
+          </div>
+
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- RIGHT COLUMN: RESULTS, TABLE, COMPLIANCE, CHARTS -->
+    <section class="calculator-results-card">
+      
+      <!-- Top Highlights Bar (Summary KPIs) -->
+      <div class="kpi-banner">
+        
+        <!-- Net Take Home KPI -->
+        <div class="kpi-card kpi-emerald">
+          <div class="kpi-top">
+            <span class="kpi-label">Estimated Monthly In-Hand</span>
+            <span class="kpi-icon">💰</span>
+          </div>
+          <div class="kpi-value" id="kpiNetMonthly">₹ 0</div>
+          <div class="kpi-sub" id="kpiNetAnnual">Annual: ₹ 0</div>
+        </div>
+
+        <!-- Gross Salary KPI -->
+        <div class="kpi-card kpi-indigo">
+          <div class="kpi-top">
+            <span class="kpi-label">Gross Monthly Salary</span>
+            <span class="kpi-icon">📋</span>
+          </div>
+          <div class="kpi-value" id="kpiGrossMonthly">₹ 0</div>
+          <div class="kpi-sub" id="kpiGrossAnnual">Annual: ₹ 0</div>
+        </div>
+
+        <!-- Total CTC KPI -->
+        <div class="kpi-card kpi-cyan">
+          <div class="kpi-top">
+            <span class="kpi-label">Total Cost to Company</span>
+            <span class="kpi-icon">🏢</span>
+          </div>
+          <div class="kpi-value" id="kpiCtcAnnual">₹ 0</div>
+          <div class="kpi-sub" id="kpiCtcMonthly">Monthly: ₹ 0</div>
+        </div>
+
+        <!-- Total Retirals KPI -->
+        <div class="kpi-card kpi-violet">
+          <div class="kpi-top">
+            <span class="kpi-label">Retirals & Benefits</span>
+            <span class="kpi-icon">🛡️</span>
+          </div>
+          <div class="kpi-value" id="kpiRetiralsAnnual">₹ 0</div>
+          <div class="kpi-sub" id="kpiRetiralsMonthly">PF + Gratuity: ₹ 0/mo</div>
+        </div>
+
+      </div>
+
+      <!-- Compliance Alert Banner (Code on Wages 50% Rule) -->
+      <div class="compliance-banner" id="complianceBanner">
+        <div class="compliance-left">
+          <span class="compliance-indicator pass" id="complianceIndicator">●</span>
+          <div class="compliance-text">
+            <div class="compliance-title" id="complianceTitle">Code on Wages Compliance Check: PASSED</div>
+            <div class="compliance-detail" id="complianceDetail">Basic salary is 50.0% of CTC, complying with the statutory 50% wage threshold.</div>
+          </div>
+        </div>
+        <div class="compliance-right">
+          <button type="button" id="autoFixWageCodeBtn" class="btn btn-sm btn-outline-warning hidden">
+            Auto-Balance to 50% Basic
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="results-tabs" role="tablist">
+        <button class="tab-btn active" data-tab="tab-breakdown" role="tab" aria-selected="true">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><polyline points="14 2 14 8 20 8"/></svg>
+          Salary Structure (Excel)
+        </button>
+        <button class="tab-btn" data-tab="tab-takehome" role="tab" aria-selected="false">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h0M2 9.5h20"/></svg>
+          In-Hand & Payslip
+        </button>
+        <button class="tab-btn" data-tab="tab-compliance" role="tab" aria-selected="false">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Statutory Checks (B27:B31)
+        </button>
+        <button class="tab-btn" data-tab="tab-visuals" role="tab" aria-selected="false">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+          Visual Analytics
+        </button>
+        <button class="tab-btn" data-tab="tab-comparison" role="tab" aria-selected="false">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Compare Offers
+        </button>
+      </nav>
+
+      <!-- TAB 1: CALCULATED SALARY STRUCTURE -->
+      <div class="tab-panel active" id="tab-breakdown" role="tabpanel">
+        
+        <div class="salary-structure-card">
+          <div class="salary-card-header">
+            <div>
+              <h3 class="table-card-title">CALCULATED SALARY STRUCTURE</h3>
+              <p class="table-card-subtitle">Live computation replicating Sheet 2 formulas cell-by-cell</p>
+            </div>
+            <button type="button" id="copySummaryBtn" class="btn-copy-summary" title="Copy formatted salary summary to clipboard">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span id="copyBtnText">Copy Summary</span>
+            </button>
+          </div>
+
+          <div class="table-container">
+            <table class="salary-table" id="salaryStructureTable">
+              <thead>
+                <tr>
+                  <th class="col-component">COMPONENT</th>
+                  <th class="col-num">ANNUAL (₹)</th>
+                  <th class="col-num">MONTHLY (₹)</th>
+                  <th class="col-pct">% OF CTC</th>
+                  <th class="col-formula">FORMULA / BASIS</th>
+                </tr>
+              </thead>
+              <tbody id="salaryTableBody">
+                <!-- Dynamically populated rows with Excel parity -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Formula Inspector Box -->
+        <div class="formula-inspector" id="formulaInspector">
+          <div class="inspector-badge">
+            <span class="code-tag">FORMULA INSPECTOR</span>
+            <span class="active-cell-label" id="inspectorCellRef">Cell A18 · Basic Salary</span>
+          </div>
+          <div class="inspector-math" id="inspectorFormula">=B4*B5/100</div>
+          <div class="inspector-explanation" id="inspectorExplanation">Calculates Basic Salary as a direct percentage of Annual CTC.</div>
+        </div>
+
+      </div>
+
+      <!-- TAB 2: TAKE-HOME & PAYSLIP VIEW -->
+      <div class="tab-panel" id="tab-takehome" role="tabpanel">
+        <div class="payslip-preview-card">
+          <div class="payslip-card-header">
+            <div>
+              <h3 class="payslip-card-title">Monthly Take-Home (Net Pay) Calculation</h3>
+              <p class="payslip-card-sub">Exact breakdown of what arrives in your bank account each month</p>
+            </div>
+            <div class="regime-badge" id="activeRegimeBadge">New Tax Regime</div>
+          </div>
+
+          <div class="inhand-equation-grid">
+            <div class="eq-box gross-box">
+              <div class="eq-title">Gross Earnings</div>
+              <div class="eq-num" id="eqGrossMonthly">₹ 0</div>
+              <div class="eq-sub">Basic + HRA + Special</div>
+            </div>
+            <div class="eq-operator">−</div>
+            <div class="eq-box deduct-box">
+              <div class="eq-title">Total Deductions</div>
+              <div class="eq-num text-rose" id="eqDeductMonthly">₹ 0</div>
+              <div class="eq-sub">PF + PT + Income Tax</div>
+            </div>
+            <div class="eq-operator">=</div>
+            <div class="eq-box net-box">
+              <div class="eq-title">Net Bank Credit</div>
+              <div class="eq-num text-emerald" id="eqNetMonthly">₹ 0</div>
+              <div class="eq-sub">Take-Home In Hand</div>
+            </div>
+          </div>
+
+          <div class="breakdown-two-col">
+            <!-- Earnings column -->
+            <div class="col-card">
+              <h4 class="col-header text-emerald">Monthly Earnings</h4>
+              <div class="line-item"><span>Basic Salary</span><strong id="thBasic">₹ 0</strong></div>
+              <div class="line-item"><span>House Rent Allowance (HRA)</span><strong id="thHra">₹ 0</strong></div>
+              <div class="line-item"><span>Special / Flexi Allowance</span><strong id="thSpecial">₹ 0</strong></div>
+              <div class="line-item" id="thSiteRow"><span>Site Allowance</span><strong id="thSite">₹ 0</strong></div>
+              <div class="line-item" id="thOtherRow"><span>Other Benefits</span><strong id="thOther">₹ 0</strong></div>
+              <div class="line-item total-line"><span>Total Gross Monthly</span><strong id="thGrossTotal">₹ 0</strong></div>
+            </div>
+
+            <!-- Deductions column -->
+            <div class="col-card">
+              <h4 class="col-header text-rose">Monthly Deductions</h4>
+              <div class="line-item">
+                <span>Employee PF (12%)</span>
+                <strong id="thEmpPf">₹ 0</strong>
+              </div>
+              <div class="line-item">
+                <span>Professional Tax (PT)</span>
+                <strong id="thPt">₹ 0</strong>
+              </div>
+              <div class="line-item">
+                <span>Estimated TDS / Income Tax</span>
+                <strong id="thTax">₹ 0</strong>
+              </div>
+              <div class="line-item total-line"><span>Total Monthly Deductions</span><strong id="thDeductTotal" class="text-rose">₹ 0</strong></div>
+            </div>
+          </div>
+
+          <div class="tax-note-box" id="taxNoteBox">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <span id="taxNoteText">Tax estimation incorporates ₹75,000 standard deduction under New Tax Regime. Income up to ₹7,75,000 is 100% tax-free under Sec 87A rebate.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: STATUTORY & CONTROL CHECKS (B27:B31) -->
+      <div class="tab-panel" id="tab-compliance" role="tabpanel">
+        <div class="checks-grid">
+          
+          <!-- Check 1: Total CTC Check (Row 28) -->
+          <div class="check-card" id="checkCtcCard">
+            <div class="check-header">
+              <span class="excel-ref-pill">Row 28</span>
+              <h4 class="check-title">Total CTC Check</h4>
+              <span class="check-status-badge pass" id="checkCtcStatus">PASSED</span>
+            </div>
+            <div class="check-val-large" id="checkCtcVal">₹ 0.00</div>
+            <p class="check-desc">
+              Audit check verifying that the sum of all calculated annual salary components exactly balances with the entered Annual CTC.
+              <strong>Requirement: Difference must be 0.</strong>
+            </p>
+          </div>
+
+          <!-- Check 2: Wage / Allowance Check (Row 29) -->
+          <div class="check-card" id="checkWageCard">
+            <div class="check-header">
+              <span class="excel-ref-pill">Row 29</span>
+              <h4 class="check-title">Wage / Allowance Check (Code on Wages)</h4>
+              <span class="check-status-badge pass" id="checkWageStatus">COMPLIANT</span>
+            </div>
+            <div class="check-val-large" id="checkWageVal">50.0% Basic / 50.0% Allowances</div>
+            <div class="meter-bar-wrapper">
+              <div class="meter-bar-fill" id="wageMeterBar" style="width: 50%;"></div>
+            </div>
+            <p class="check-desc" id="checkWageDesc">
+              Under India's Code on Wages, basic remuneration must be at least 50% of total remuneration. If allowances exceed 50%, the excess is statutorily treated as wages for PF and gratuity calculations.
+            </p>
+          </div>
+
+          <!-- Check 3: PF Monthly Wage (Row 30) -->
+          <div class="check-card">
+            <div class="check-header">
+              <span class="excel-ref-pill">Row 30</span>
+              <h4 class="check-title">PF Monthly Wage & Ceiling Comparison</h4>
+              <span class="check-status-badge info" id="checkPfStatus">CAPPED</span>
+            </div>
+            <div class="check-val-large" id="checkPfWageVal">₹ 50,000 / mo</div>
+            <p class="check-desc" id="checkPfDesc">
+              Compares monthly basic wage with the statutory ceiling of ₹15,000. 
+              Currently contributing on <strong>statutory ceiling</strong> (Employee PF = ₹1,800/mo, Employer PF = ₹1,800/mo).
+            </p>
+          </div>
+
+          <!-- Check 4: Gratuity Annual Provision (Row 31) -->
+          <div class="check-card">
+            <div class="check-header">
+              <span class="excel-ref-pill">Row 31</span>
+              <h4 class="check-title">Gratuity Annual Provision & Accrual</h4>
+              <span class="check-status-badge info">15/26/12 METHOD</span>
+            </div>
+            <div class="check-val-large" id="checkGratuityVal">₹ 28,846 / yr</div>
+            <p class="check-desc">
+              Statutory gratuity calculated as <code>15 / 26 / 12 = 4.8077%</code> of eligible monthly basic wage.
+              Estimated payout on 5 years service: <strong id="gratuity5yrPayout">₹ 1,44,230</strong>.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TAB 4: VISUAL ANALYTICS -->
+      <div class="tab-panel" id="tab-visuals" role="tabpanel">
+        <div class="visuals-container">
+          
+          <div class="chart-card">
+            <h3 class="chart-title">CTC Component Distribution</h3>
+            <div class="chart-box">
+              <div class="donut-chart-wrapper">
+                <svg viewBox="0 0 100 100" class="donut-svg" id="donutSvg" width="220" height="220">
+                  <circle cx="50" cy="50" r="40" class="donut-bg" stroke-width="14"></circle>
+                  <!-- Segments injected dynamically -->
+                </svg>
+                <div class="donut-center-label">
+                  <span class="donut-center-title">Annual CTC</span>
+                  <span class="donut-center-val" id="donutCenterVal">₹ 12L</span>
+                </div>
+              </div>
+              <div class="chart-legend" id="chartLegend">
+                <!-- Legend items injected dynamically -->
+              </div>
+            </div>
+          </div>
+
+          <div class="stacked-bar-card">
+            <h3 class="chart-title">Monthly Cashflow Flowchart</h3>
+            <div class="stacked-bar-container">
+              <div class="stacked-bar-label">
+                <span>CTC Monthly: <strong id="flowCtcMonthly">₹ 1,00,000</strong></span>
+                <span>In-Hand Net: <strong id="flowNetMonthly" class="text-emerald">₹ 82,400</strong></span>
+              </div>
+              <div class="stacked-bar-track" id="stackedBarTrack">
+                <div class="bar-segment seg-net" id="segNet" title="Net In-Hand"></div>
+                <div class="bar-segment seg-tax" id="segTax" title="Income Tax & PT"></div>
+                <div class="bar-segment seg-pf" id="segPf" title="PF (Employee + Employer)"></div>
+                <div class="bar-segment seg-gratuity" id="segGratuity" title="Gratuity Provision"></div>
+              </div>
+              <div class="stacked-bar-legend">
+                <span class="legend-dot dot-net">● In-Hand (Net)</span>
+                <span class="legend-dot dot-tax">● Taxes (TDS + PT)</span>
+                <span class="legend-dot dot-pf">● Provident Fund (24%)</span>
+                <span class="legend-dot dot-gratuity">● Gratuity Provision (4.8%)</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TAB 5: COMPARE OFFERS -->
+      <div class="tab-panel" id="tab-comparison" role="tabpanel">
+        <div class="comparison-card">
+          <div class="comparison-header">
+            <div>
+              <h3 class="comparison-title">Side-by-Side Offer Comparison</h3>
+              <p class="comparison-sub">Compare your current CTC vs new offer to see true net take-home growth</p>
+            </div>
+          </div>
+
+          <div class="comparison-inputs-grid">
+            <div class="offer-input-box">
+              <label class="offer-label">Offer A (Current)</label>
+              <div class="input-with-symbol">
+                <span class="currency-tag">₹</span>
+                <input type="number" id="offerAInput" value="1000000" step="50000" class="regular-input">
+              </div>
+            </div>
+            <div class="offer-input-box">
+              <label class="offer-label">Offer B (New Offer)</label>
+              <div class="input-with-symbol">
+                <span class="currency-tag">₹</span>
+                <input type="number" id="offerBInput" value="1500000" step="50000" class="regular-input">
+              </div>
+            </div>
+          </div>
+
+          <div class="comparison-table-wrapper">
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>Metric</th>
+                  <th>Offer A</th>
+                  <th>Offer B</th>
+                  <th>Variance (Growth)</th>
+                </tr>
+              </thead>
+              <tbody id="comparisonTableBody">
+                <!-- Comparison rows generated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- PRINTABLE / PDF ANNEXURE MODAL -->
+  <div class="modal-overlay hidden" id="annexureModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Official Compensation Annexure (Payslip Preview)</h3>
+        <div class="modal-header-actions">
+          <button id="modalPrintBtn" class="btn btn-primary btn-sm">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Print / Save as PDF
+          </button>
+          <button id="modalCloseBtn" class="modal-close" aria-label="Close modal">×</button>
+        </div>
+      </div>
+
+      <div class="modal-body" id="annexurePrintArea">
+        <div class="annexure-document">
+          <div class="doc-header">
+            <div class="company-logo-placeholder">
+              <div class="company-name">ENTERPRISE SOLUTIONS PRIVATE LIMITED</div>
+              <div class="company-sub">Annexure A: Salary Breakdown & Compensation Structure</div>
+            </div>
+            <div class="doc-meta">
+              <div><strong>Date:</strong> <span id="annexureDate">23 Oct 2026</span></div>
+              <div><strong>Doc Ref:</strong> <span id="annexureRef">CTC/2026/0891</span></div>
+            </div>
+          </div>
+
+          <div class="doc-employee-details">
+            <div class="doc-field"><span>Candidate / Employee Name:</span> <strong>Sample Employee</strong></div>
+            <div class="doc-field"><span>Designation:</span> <strong>Senior Professional</strong></div>
+            <div class="doc-field"><span>Annual CTC:</span> <strong id="annexureCtcVal">₹ 12,00,000</strong></div>
+          </div>
+
+          <table class="annexure-table">
+            <thead>
+              <tr>
+                <th>Salary Component</th>
+                <th>Monthly (INR)</th>
+                <th>Annual (INR)</th>
+                <th>% of CTC</th>
+              </tr>
+            </thead>
+            <tbody id="annexureTableBody">
+              <!-- Populated via JS -->
+            </tbody>
+            <tfoot id="annexureTableFoot">
+              <!-- Total row -->
+            </tfoot>
+          </table>
+
+          <div class="annexure-notes">
+            <h4>Statutory & Compensation Terms:</h4>
+            <ul>
+              <li>Provident Fund contributions are remitted in compliance with the Employees' Provident Funds & Miscellaneous Provisions Act, 1952.</li>
+              <li>Gratuity provision is accounted at 4.8077% (15/26/12 method) per the Payment of Gratuity Act, 1972, payable after 5 years of continuous service.</li>
+              <li>Site / Project Bonus is contingent upon successful project execution and milestone delivery.</li>
+              <li>Income Tax (TDS) and Professional Tax will be deducted at source per applicable government enactments.</li>
+            </ul>
+          </div>
+
+          <div class="doc-signatures">
+            <div class="sig-block">
+              <div class="sig-line"></div>
+              <span>Authorized Signatory (HR / Finance)</span>
+            </div>
+            <div class="sig-block">
+              <div class="sig-line"></div>
+              <span>Candidate / Employee Acceptance</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MATH INFO MODAL -->
+  <div class="modal-overlay hidden" id="mathInfoModal">
+    <div class="modal-dialog modal-dialog-sm">
+      <div class="modal-header">
+        <h3 class="modal-title">Calculation Math Explanations</h3>
+        <button id="mathInfoCloseBtn" class="modal-close">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-content">
+          <h4>1. Excel Sheet Math Mode (Strict Parity)</h4>
+          <p>
+            In your uploaded Excel file (<code>Salary Calculater.xlsx</code>), the Special Allowance is calculated using the formula:
+            <br>
+            <code>=B24 - SUM(B18:B19, B21:B23)</code>
+            <br>
+            where both <strong>Employee PF</strong> (B21) and <strong>Employer PF</strong> (B22) along with <strong>Gratuity</strong> (B23) are deducted from Total CTC to calculate Special Allowance.
+          </p>
+
+          <h4>2. Standard Corporate Payroll Mode</h4>
+          <p>
+            In standard corporate Indian payroll accounting, CTC represents the total employer liability:
+            <br>
+            <code>CTC = Gross Salary + Employer Retirals (Employer PF + Gratuity)</code>
+            <br>
+            Employee PF is deducted from Gross Salary rather than from CTC. Both options are supported seamlessly so you can match both your Excel file and statutory HR requirements!
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SheetJS local library -->
+  <script src="libs/xlsx.full.min.js"></script>
+  <!-- Core Logic Script -->
+  <script src="calculator.js"></script>
+</body>
+</html>
