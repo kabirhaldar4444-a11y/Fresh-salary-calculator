@@ -213,44 +213,29 @@
 
   // Convert Indian Numbers to Words
   function numberToWordsINR(num) {
+    if (isNaN(num) || !isFinite(num)) return '';
     if (num === 0) return 'Zero Rupees Only';
     if (num < 0) return 'Minus ' + numberToWordsINR(Math.abs(num));
-    
+    if (num > 1e16) return 'Exceeds Maximum Payroll Scale';
+
     num = Math.round(num);
+
     const a = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten',
       'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
     const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
 
-    function inWords(n) {
-      let str = '';
-      if (n > 19) {
-        str += b[Math.floor(n / 10)];
-        if (n % 10) str += ' ' + a[n % 10];
-      } else {
-        str += a[n];
-      }
-      return str;
+    function convert(n) {
+      if (n === 0) return '';
+      if (n < 20) return a[n];
+      if (n < 100) return b[Math.floor(n / 10)] + (n % 10 ? ' ' + a[n % 10] : '');
+      if (n < 1000) return a[Math.floor(n / 100)] + ' Hundred' + (n % 100 ? ' and ' + convert(n % 100) : '');
+      if (n < 100000) return convert(Math.floor(n / 1000)) + ' Thousand' + (n % 1000 ? ' ' + convert(n % 1000) : '');
+      if (n < 10000000) return convert(Math.floor(n / 100000)) + ' Lakh' + (n % 100000 ? ' ' + convert(n % 100000) : '');
+      return convert(Math.floor(n / 10000000)) + ' Crore' + (n % 10000000 ? ' ' + convert(n % 10000000) : '');
     }
 
-    let crore = Math.floor(num / 10000000);
-    num %= 10000000;
-    let lakh = Math.floor(num / 100000);
-    num %= 100000;
-    let thousand = Math.floor(num / 1000);
-    num %= 1000;
-    let hundred = Math.floor(num / 100);
-    let remaining = num % 100;
-
-    let res = '';
-    if (crore > 0) res += inWords(crore) + ' Crore ';
-    if (lakh > 0) res += inWords(lakh) + ' Lakh ';
-    if (thousand > 0) res += inWords(thousand) + ' Thousand ';
-    if (hundred > 0) res += inWords(hundred) + ' Hundred ';
-    if (remaining > 0) {
-      if (res !== '') res += 'and ';
-      res += inWords(remaining) + ' ';
-    }
-    return (res.trim() + ' Rupees Only');
+    const words = convert(num).trim();
+    return words ? words + ' Rupees Only' : 'Zero Rupees Only';
   }
 
   // --- CORE MATHEMATICAL ENGINE ---
