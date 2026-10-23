@@ -1,21 +1,22 @@
 /* ==========================================================================
    ApexSalary — Enterprise Design System (Vanilla CSS)
-   Aesthetic: Executive White Luxury Theme
+   Aesthetic: Executive White Luxury Glassmorphism Theme
    ========================================================================== */
 
 :root {
-  /* Premium Executive White Theme (Default & Only) */
+  /* Premium Executive White Glassmorphism Tokens */
   --bg-primary: #F8FAFC;
-  --bg-surface: #FFFFFF;
-  --bg-surface-elevated: #F1F5F9;
-  --bg-card: #FFFFFF;
-  --bg-card-hover: #FFFFFF;
-  --bg-input: #FFFFFF;
+  --bg-surface: rgba(255, 255, 255, 0.72);
+  --bg-surface-elevated: rgba(241, 245, 249, 0.7);
+  --bg-card: rgba(255, 255, 255, 0.78);
+  --bg-card-hover: rgba(255, 255, 255, 0.92);
+  --bg-input: rgba(255, 255, 255, 0.88);
   
-  --border-subtle: #E2E8F0;
-  --border-medium: #CBD5E1;
+  --border-subtle: rgba(226, 232, 240, 0.85);
+  --border-medium: rgba(203, 213, 225, 0.85);
+  --border-glass: rgba(255, 255, 255, 0.95);
   --border-focus: #4F46E5;
-  --border-highlight: rgba(79, 70, 229, 0.25);
+  --border-highlight: rgba(79, 70, 229, 0.3);
 
   --text-primary: #0F172A;
   --text-secondary: #475569;
@@ -30,12 +31,14 @@
   --accent-amber: #D97706;
   --accent-rose: #E11D48;
 
-  /* Shadows & Ambient Glows */
-  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
-  --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.08);
-  --shadow-lg: 0 12px 36px rgba(15, 23, 42, 0.12);
-  --glow-indigo: 0 0 20px rgba(79, 70, 229, 0.12);
-  --glow-emerald: 0 0 20px rgba(5, 150, 105, 0.12);
+  /* Glassmorphism Shadows & Light Reflections */
+  --shadow-sm: 0 2px 8px 0 rgba(148, 163, 184, 0.08);
+  --shadow-md: 0 8px 24px 0 rgba(148, 163, 184, 0.12), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
+  --shadow-lg: 0 16px 40px 0 rgba(148, 163, 184, 0.15), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
+  --shadow-glass: 0 12px 36px 0 rgba(99, 102, 241, 0.07), 0 2px 8px 0 rgba(0, 0, 0, 0.02), inset 0 1px 1.5px 0 rgba(255, 255, 255, 1);
+  --shadow-glass-hover: 0 18px 48px 0 rgba(99, 102, 241, 0.14), inset 0 1px 1.5px 0 #FFFFFF;
+  --glow-indigo: 0 0 24px rgba(79, 70, 229, 0.16);
+  --glow-emerald: 0 0 24px rgba(5, 150, 105, 0.16);
 
   /* Fonts */
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -45,7 +48,7 @@
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 18px;
-  --radius-xl: 24px;
+  --radius-xl: 22px;
   --radius-full: 9999px;
 
   /* Transitions */
@@ -75,40 +78,78 @@ body {
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
-  padding-bottom: 3rem;
-  background-color: var(--bg-primary);
+  padding-bottom: 3.5rem;
+  background-color: #F8FAFC;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.10) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(2, 132, 199, 0.09) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(124, 58, 237, 0.09) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(5, 150, 105, 0.08) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(255, 255, 255, 0.6) 0px, transparent 100%);
+  background-attachment: fixed;
   max-width: 100vw;
 }
 
-/* Ambient Backdrops */
+/* Ambient Backdrops for Frosted Glass Depth */
 .ambient-glow {
   position: fixed;
   border-radius: 50%;
-  filter: blur(140px);
+  filter: blur(120px);
   pointer-events: none;
   z-index: 0;
-  opacity: 0.35;
+  opacity: 0.45;
 }
 
 .glow-1 {
-  top: -120px;
-  right: 5%;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, var(--accent-indigo) 0%, transparent 70%);
+  top: -100px;
+  right: 8%;
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.32) 0%, rgba(124, 58, 237, 0.16) 50%, transparent 70%);
+  animation: floatGlow 14s ease-in-out infinite alternate;
 }
 
 .glow-2 {
-  bottom: 5%;
-  left: -100px;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, var(--accent-violet) 0%, transparent 70%);
-  opacity: 0.22;
+  bottom: 8%;
+  left: -80px;
+  width: 620px;
+  height: 620px;
+  background: radial-gradient(circle, rgba(2, 132, 199, 0.28) 0%, rgba(79, 70, 229, 0.14) 50%, transparent 70%);
+  animation: floatGlow2 18s ease-in-out infinite alternate;
+}
+
+.glow-3 {
+  top: 38%;
+  right: -60px;
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(circle, rgba(225, 29, 72, 0.18) 0%, rgba(124, 58, 237, 0.12) 50%, transparent 70%);
+  animation: floatGlow 16s ease-in-out infinite alternate-reverse;
+}
+
+.glow-4 {
+  top: 15%;
+  left: 25%;
+  width: 520px;
+  height: 520px;
+  background: radial-gradient(circle, rgba(5, 150, 105, 0.18) 0%, rgba(2, 132, 199, 0.12) 50%, transparent 70%);
+  animation: floatGlow2 20s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes floatGlow {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, 35px) scale(1.06); }
+  100% { transform: translate(-20px, 15px) scale(0.97); }
+}
+
+@keyframes floatGlow2 {
+  0% { transform: translate(0, 0) scale(0.96); }
+  50% { transform: translate(-35px, -25px) scale(1.05); }
+  100% { transform: translate(25px, -15px) scale(1); }
 }
 
 /* ==========================================================================
-   Header Component
+   Header Component (Frosted Glass)
    ========================================================================== */
 .app-header {
   position: sticky;
@@ -119,11 +160,12 @@ body {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 0.75rem;
-  padding: 0.65rem 1.5rem;
-  background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.75rem 1.75rem;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 24px 0 rgba(148, 163, 184, 0.08), inset 0 -1px 0 0 rgba(226, 232, 240, 0.4);
   transition: all var(--transition-normal);
 }
 
@@ -355,9 +397,11 @@ body {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 0.5rem;
-  padding: 0.5rem 1.5rem;
-  background: var(--bg-surface);
-  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.55rem 1.75rem;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.7);
   position: relative;
   z-index: 10;
 }
@@ -378,27 +422,34 @@ body {
 }
 
 .preset-chip {
-  background: var(--bg-surface-elevated);
-  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
   color: var(--text-secondary);
   font-size: 0.74rem;
   font-weight: 600;
   font-family: var(--font-mono);
-  padding: 0.28rem 0.55rem;
+  padding: 0.3rem 0.65rem;
   border-radius: var(--radius-sm);
   cursor: pointer;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
   transition: all var(--transition-fast);
 }
 
 .preset-chip:hover {
-  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--text-heading);
   border-color: var(--border-medium);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.12);
 }
 
 .preset-chip.active {
-  background: rgba(99, 102, 241, 0.15);
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.12), rgba(124, 58, 237, 0.12));
   border-color: var(--accent-indigo);
-  color: #818CF8;
+  color: var(--accent-indigo);
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.2);
 }
 
 .excel-import-wrap {
@@ -463,17 +514,19 @@ body {
    Left Panel: Calculator Inputs Card
    ========================================================================== */
 .calculator-inputs-card {
-  background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: 1.25rem;
-  box-shadow: var(--shadow-md);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: var(--radius-xl);
+  padding: 1.35rem;
+  box-shadow: 0 12px 36px 0 rgba(99, 102, 241, 0.06), 0 2px 8px 0 rgba(0, 0, 0, 0.02), inset 0 1px 1.5px 0 rgba(255, 255, 255, 1);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.1rem;
   height: fit-content;
+  position: relative;
+  overflow: hidden;
 }
 
 .card-header-with-badge {
@@ -495,8 +548,8 @@ body {
   font-weight: 600;
   padding: 0.2rem 0.5rem;
   border-radius: var(--radius-sm);
-  background: rgba(99, 102, 241, 0.14);
-  color: #A5B4FC;
+  background: rgba(99, 102, 241, 0.12);
+  color: var(--accent-indigo);
   border: 1px solid rgba(99, 102, 241, 0.25);
 }
 
@@ -524,10 +577,11 @@ body {
 
 .input-period-toggle {
   display: flex;
-  background: var(--bg-input);
+  background: rgba(241, 245, 249, 0.8);
+  backdrop-filter: blur(8px);
   border-radius: var(--radius-sm);
-  padding: 0.15rem;
-  border: 1px solid var(--border-subtle);
+  padding: 0.18rem;
+  border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
 .period-chip {
@@ -536,7 +590,7 @@ body {
   font-size: 0.72rem;
   font-weight: 600;
   color: var(--text-muted);
-  padding: 0.2rem 0.5rem;
+  padding: 0.2rem 0.55rem;
   border-radius: 4px;
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -545,6 +599,7 @@ body {
 .period-chip.active {
   background: var(--accent-indigo);
   color: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);
 }
 
 .hero-input-wrapper {
@@ -564,22 +619,25 @@ body {
 
 .hero-number-input {
   width: 100%;
-  background: var(--bg-input);
-  border: 2px solid var(--border-medium);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 2px solid rgba(203, 213, 225, 0.85);
   border-radius: var(--radius-md);
   padding: 0.8rem 1rem 0.8rem 2.8rem;
-  font-size: 1.6rem;
-  font-weight: 800;
   font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
+  font-size: 1.35rem;
+  font-weight: 700;
   color: var(--text-heading);
   outline: none;
-  transition: all var(--transition-normal);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
+  transition: all var(--transition-fast);
 }
 
 .hero-number-input:focus {
   border-color: var(--accent-indigo);
-  box-shadow: var(--glow-indigo);
+  background: #FFFFFF;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.14), inset 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 .amount-words {
@@ -686,11 +744,21 @@ body {
 .input-with-unit, .input-with-symbol {
   display: flex;
   align-items: center;
-  background: var(--bg-input);
-  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(203, 213, 225, 0.8);
   border-radius: var(--radius-sm);
   padding: 0.25rem 0.5rem;
   gap: 0.35rem;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
+  transition: all var(--transition-fast);
+}
+
+.input-with-unit:focus-within, .input-with-symbol:focus-within {
+  border-color: var(--accent-indigo);
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
 }
 
 .input-with-unit.small, .input-with-symbol.small {
@@ -738,8 +806,8 @@ body {
 }
 
 .mini-chip {
-  background: transparent;
-  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(226, 232, 240, 0.8);
   color: var(--text-secondary);
   font-size: 0.7rem;
   font-weight: 600;
@@ -749,18 +817,28 @@ body {
   transition: all var(--transition-fast);
 }
 
+.mini-chip:hover {
+  background: #FFFFFF;
+  border-color: var(--border-medium);
+  color: var(--text-heading);
+}
+
 .mini-chip.active {
-  background: rgba(6, 182, 212, 0.15);
+  background: rgba(2, 132, 199, 0.12);
   border-color: var(--accent-cyan);
   color: var(--accent-cyan);
 }
 
 /* Accordion Component */
 .accordion-item {
-  border: 1px solid var(--border-subtle);
+  border: 1px solid rgba(255, 255, 255, 0.85);
   border-radius: var(--radius-md);
-  background: var(--bg-surface);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.02);
+  transition: all var(--transition-fast);
 }
 
 .accordion-header {
@@ -908,20 +986,20 @@ body {
 }
 
 .kpi-card {
-  background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 0.95rem 1.1rem;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: var(--radius-lg);
+  padding: 1.05rem 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 8px 24px 0 rgba(148, 163, 184, 0.09), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
   position: relative;
   overflow: hidden;
   min-width: 0;
-  transition: all var(--transition-fast);
+  transition: all var(--transition-normal);
 }
 
 .kpi-card::after {
@@ -931,12 +1009,13 @@ body {
   left: 0;
   right: 0;
   height: 3px;
-  background: currentColor;
+  background: linear-gradient(90deg, currentColor, rgba(255, 255, 255, 0.8));
 }
 
 .kpi-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-3px) scale(1.01);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 16px 36px 0 rgba(99, 102, 241, 0.12), inset 0 1px 1.5px 0 #FFFFFF;
 }
 
 .kpi-emerald { color: var(--accent-emerald); }
@@ -986,10 +1065,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.85rem 1.25rem;
-  border-radius: var(--radius-md);
+  padding: 0.9rem 1.35rem;
+  border-radius: var(--radius-lg);
   background: rgba(16, 185, 129, 0.08);
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8);
   transition: all var(--transition-normal);
 }
 
@@ -1027,7 +1109,7 @@ body {
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.7);
   overflow-x: auto;
   padding-bottom: 2px;
   scrollbar-width: thin;
@@ -1079,13 +1161,13 @@ body {
    Tab 1: Salary Structure Table (Excel Model)
    ========================================================================== */
 .salary-structure-card {
-  background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: var(--radius-xl);
   padding: 1.5rem;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 12px 36px 0 rgba(148, 163, 184, 0.09), inset 0 1px 1.5px 0 rgba(255, 255, 255, 1);
   display: flex;
   flex-direction: column;
   gap: 1.1rem;
@@ -1244,9 +1326,12 @@ body {
   font-family: var(--font-mono);
   font-size: 0.7rem;
   font-weight: 700;
-  color: #818CF8;
-  background: rgba(99, 102, 241, 0.12);
-  border: 1px solid rgba(99, 102, 241, 0.25);
+  color: var(--accent-indigo);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(79, 70, 229, 0.25);
+  box-shadow: 0 1px 3px rgba(79, 70, 229, 0.06);
   padding: 0.15rem 0.5rem;
   border-radius: 4px;
   letter-spacing: -0.01em;
@@ -1259,7 +1344,9 @@ body {
 
 /* Total Highlight Row (A24) */
 .total-highlight-row td {
-  background: #EEF2FF !important;
+  background: rgba(238, 242, 255, 0.85) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-top: 1.5px solid var(--accent-indigo);
   border-bottom: 1.5px solid var(--accent-indigo);
   font-weight: 800;
@@ -1288,9 +1375,9 @@ body {
 }
 
 .total-highlight-row .formula-pill {
-  background: rgba(99, 102, 241, 0.25);
-  color: #C7D2FE;
-  border-color: var(--accent-indigo);
+  background: rgba(79, 70, 229, 0.12);
+  color: var(--accent-indigo);
+  border-color: rgba(79, 70, 229, 0.35);
 }
 
 /* Bonus Row (A25) */
@@ -1402,10 +1489,13 @@ body {
    Tab 2: In-Hand (Take-Home) View
    ========================================================================== */
 .payslip-preview-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: var(--radius-xl);
   padding: 1.5rem;
+  box-shadow: 0 12px 36px 0 rgba(148, 163, 184, 0.09), inset 0 1px 1.5px 0 rgba(255, 255, 255, 1);
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -1577,17 +1667,23 @@ body {
 }
 
 .check-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: var(--radius-lg);
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  box-shadow: 0 4px 16px 0 rgba(148, 163, 184, 0.07), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
   transition: all var(--transition-fast);
 }
 
 .check-card:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 10px 28px 0 rgba(99, 102, 241, 0.1), inset 0 1px 1.5px 0 #FFFFFF;
   border-color: var(--border-medium);
 }
 
@@ -1677,10 +1773,13 @@ body {
 }
 
 .chart-card, .stacked-bar-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: var(--radius-xl);
   padding: 1.5rem;
+  box-shadow: 0 12px 36px 0 rgba(148, 163, 184, 0.09), inset 0 1px 1.5px 0 rgba(255, 255, 255, 1);
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -1844,10 +1943,13 @@ body {
    Tab 5: Offer Comparison
    ========================================================================== */
 .comparison-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: var(--radius-xl);
   padding: 1.5rem;
+  box-shadow: 0 12px 36px 0 rgba(148, 163, 184, 0.09), inset 0 1px 1.5px 0 rgba(255, 255, 255, 1);
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -1935,9 +2037,9 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1946,16 +2048,18 @@ body {
 }
 
 .modal-dialog {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-medium);
-  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(30px) saturate(200%);
+  -webkit-backdrop-filter: blur(30px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: var(--radius-xl);
   width: 100%;
   max-width: 820px;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.2), inset 0 1px 1.5px 0 #FFFFFF;
   animation: modalScale 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
