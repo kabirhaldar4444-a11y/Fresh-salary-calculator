@@ -43,8 +43,8 @@
       <div class="mode-pill" title="Toggle calculation convention">
         <span class="pill-label">Math Model:</span>
         <select id="mathModeSelect" class="clean-select" aria-label="Calculation Math Model">
-          <option value="excel">Excel Sheet 1:1 Math</option>
-          <option value="standard" selected>Standard Corporate CTC</option>
+          <option value="excel" selected>Excel Sheet 1:1 Math</option>
+          <option value="standard">Standard Corporate CTC</option>
         </select>
         <button id="mathInfoBtn" class="icon-btn-info" title="Explain Math Differences">ℹ</button>
       </div>
@@ -77,8 +77,9 @@
       <button class="preset-chip" data-ctc="350000">₹3.5 LPA</button>
       <button class="preset-chip" data-ctc="600000" title="₹50k / month">₹6.0 LPA (₹50k/mo)</button>
       <button class="preset-chip" data-ctc="1000000">₹10 LPA</button>
-      <button class="preset-chip active" data-ctc="1200000">₹12 LPA (₹1L/mo)</button>
+      <button class="preset-chip" data-ctc="1200000">₹12 LPA (₹1L/mo)</button>
       <button class="preset-chip" data-ctc="1800000">₹18 LPA</button>
+      <button class="preset-chip active" data-ctc="2000000">₹20 LPA</button>
       <button class="preset-chip" data-ctc="2500000">₹25 LPA</button>
       <button class="preset-chip" data-ctc="5000000">₹50 LPA</button>
     </div>
@@ -114,14 +115,14 @@
         
         <div class="hero-input-wrapper">
           <span class="currency-prefix" id="currSymbolPrefix">₹</span>
-          <input type="number" id="ctcInput" class="hero-number-input" value="1200000" min="10000" max="100000000" step="10000" placeholder="e.g. 1200000">
+          <input type="number" id="ctcInput" class="hero-number-input" value="2000000" min="10000" max="100000000" step="10000" placeholder="e.g. 2000000">
         </div>
         
         <div class="slider-row">
-          <input type="range" id="ctcSlider" min="50000" max="5000000" step="25000" value="1200000" class="styled-slider">
+          <input type="range" id="ctcSlider" min="50000" max="5000000" step="25000" value="2000000" class="styled-slider">
         </div>
         
-        <div class="amount-words" id="ctcInWords">Twelve Lakh Rupees Only</div>
+        <div class="amount-words" id="ctcInWords">Twenty Lakh Rupees Only</div>
       </div>
 
       <hr class="card-divider">
@@ -249,7 +250,7 @@
             </div>
             <div class="input-with-symbol small">
               <span class="currency-tag">₹</span>
-              <input type="number" id="pfCeilingInput" value="15000" min="0" step="1000" class="small-input">
+              <input type="number" id="pfCeilingInput" value="25000" min="0" step="1000" class="small-input">
             </div>
           </div>
 
@@ -260,7 +261,7 @@
               <span class="control-desc">Cell B12 (Yes = full Basic; No = ₹15k cap)</span>
             </div>
             <label class="switch">
-              <input type="checkbox" id="pfHigherWageCheck">
+              <input type="checkbox" id="pfHigherWageCheck" checked>
               <span class="slider round"></span>
             </label>
           </div>

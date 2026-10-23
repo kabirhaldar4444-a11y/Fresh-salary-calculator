@@ -8,7 +8,7 @@
 
   // --- STATE ---
   const state = {
-    ctc: 1200000,
+    ctc: 2000000,
     isMonthlyInput: false,
     basicPercent: 50,
     hraPercent: 40,
@@ -17,12 +17,12 @@
     projectBonus: 500000,
     pfApplicable: true,
     pfRate: 12,
-    pfWageCeiling: 15000,
-    pfHigherWage: false,
+    pfWageCeiling: 25000,
+    pfHigherWage: true,
     gratuityRate: 4.807692308, // 15/26/12 = 4.807692308%
     ptApplicable: true,
     taxRegime: 'new',
-    mathMode: 'standard', // 'excel' or 'standard'
+    mathMode: 'excel',    // 'excel' math mode so Special Allowance = B24-SUM(B18:B19,B21:B23) = 15.60%
     currency: 'INR',      // 'INR' or 'USD'
     activeInspectorRow: 'B18',
     offerA: 1000000,
@@ -464,6 +464,12 @@
     elements.siteAllowanceInput.value = state.siteAllowance;
     elements.otherBenefitsInput.value = state.otherBenefits;
     elements.projectBonusInput.value = state.projectBonus;
+    if (elements.pfApplicableCheck) elements.pfApplicableCheck.checked = state.pfApplicable;
+    if (elements.pfRateInput) elements.pfRateInput.value = state.pfRate;
+    if (elements.pfCeilingInput) elements.pfCeilingInput.value = state.pfWageCeiling;
+    if (elements.pfHigherWageCheck) elements.pfHigherWageCheck.checked = state.pfHigherWage;
+    if (elements.gratuityRateInput) elements.gratuityRateInput.value = state.gratuityRate.toFixed(4);
+    if (elements.mathModeSelect) elements.mathModeSelect.value = state.mathMode;
 
     // 4. Update KPIs
     elements.kpiNetMonthly.textContent = formatCurrency(m.netTakeHomeMonthly);
@@ -512,7 +518,7 @@
   // --- TAB 1: EXCEL SALARY STRUCTURE TABLE ---
   function renderExcelTable(m) {
     const specialFormula = state.mathMode === 'excel' 
-      ? 'B24-SUM(...)' 
+      ? 'B24-SUM(B18:B19,B21:B23)' 
       : 'B24-SUM(B18:B19,B22:B23)';
     const specialFormulaFull = state.mathMode === 'excel'
       ? '=B24-SUM(B18:B19,B21:B23)'
@@ -1187,7 +1193,7 @@ Gross Monthly:        ${formatCurrency(m.grossMonthly)}
 
     // Reset Defaults (Matches Salary Calculater.xlsx initial values)
     elements.resetDefaultsBtn.addEventListener('click', () => {
-      state.ctc = 50000;
+      state.ctc = 2000000;
       state.basicPercent = 50;
       state.hraPercent = 40;
       state.siteAllowance = 0;
@@ -1195,11 +1201,11 @@ Gross Monthly:        ${formatCurrency(m.grossMonthly)}
       state.projectBonus = 500000;
       state.pfApplicable = true;
       state.pfRate = 12;
-      state.pfWageCeiling = 15000;
-      state.pfHigherWage = false;
+      state.pfWageCeiling = 25000;
+      state.pfHigherWage = true;
       state.gratuityRate = 4.807692308;
       state.mathMode = 'excel';
-      elements.mathModeSelect.value = 'excel';
+      if (elements.mathModeSelect) elements.mathModeSelect.value = 'excel';
       renderAll();
     });
 
