@@ -841,14 +841,29 @@
       ? (m.ctc >= 10000000 ? `${(m.ctc / 10000000).toFixed(2)} Cr` : `${(m.ctc / 100000).toFixed(1)}L`)
       : `$${(m.ctc / 1000).toFixed(0)}k`;
 
-    // Segments: Basic, HRA, Special Allowance, Retirals (PF + Gratuity)
+    // Segments: Basic, HRA, Special Allowance, Retirals/PF + Gratuity
     const segments = [
       { name: 'Basic Salary', val: m.basicAnnual, color: 'var(--accent-indigo)' },
       { name: 'House Rent Allowance (HRA)', val: m.hraAnnual, color: 'var(--accent-cyan)' },
-      { name: 'Special / Flexi Allowance', val: Math.max(0, m.specialAnnual), color: 'var(--accent-violet)' },
-      { name: 'Provident Fund (Employer)', val: m.emprPfAnnual, color: '#3B82F6' },
-      { name: 'Gratuity Provision', val: m.gratuityAnnual, color: '#EAB308' }
+      { name: 'Special / Flexi Allowance', val: Math.max(0, m.specialAnnual), color: 'var(--accent-violet)' }
     ];
+
+    if (state.mathMode === 'excel') {
+      if (m.empPfAnnual > 0) {
+        segments.push({ name: 'Employee PF Contribution', val: m.empPfAnnual, color: '#3B82F6' });
+      }
+      if (m.emprPfAnnual > 0) {
+        segments.push({ name: 'Employer PF Contribution', val: m.emprPfAnnual, color: '#06B6D4' });
+      }
+    } else {
+      if (m.emprPfAnnual > 0) {
+        segments.push({ name: 'Provident Fund (Employer)', val: m.emprPfAnnual, color: '#3B82F6' });
+      }
+    }
+
+    if (m.gratuityAnnual > 0) {
+      segments.push({ name: 'Gratuity Provision', val: m.gratuityAnnual, color: '#EAB308' });
+    }
 
     if (m.siteAllowance > 0) {
       segments.push({ name: 'Site Allowance', val: m.siteAllowance, color: '#F97316' });
@@ -857,7 +872,7 @@
       segments.push({ name: 'Other Benefits', val: m.otherBenefits, color: '#EC4899' });
     }
 
-    const total = segments.reduce((sum, s) => sum + s.val, 0);
+    const total = m.ctc > 0 ? m.ctc : segments.reduce((sum, s) => sum + s.val, 0);
     const circumference = 2 * Math.PI * 40; // ~251.32
 
     // Build SVG donut
