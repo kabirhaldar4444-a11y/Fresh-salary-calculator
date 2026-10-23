@@ -44,6 +44,8 @@
     resetDefaultsBtn: document.getElementById('resetDefaultsBtn'),
     excelFileInput: document.getElementById('excelFileInput'),
     importExcelBtn: document.getElementById('importExcelBtn'),
+    soundToggleBtn: document.getElementById('soundToggleBtn'),
+    soundIcon: document.getElementById('soundIcon'),
 
     // Presets
     presetChips: document.querySelectorAll('.preset-chip'),
@@ -209,6 +211,146 @@
       maximumFractionDigits: decimalPlaces
     });
     return amount < 0 ? `-${formatted}` : formatted;
+  }
+
+  // ==========================================================================
+  // Localhost Pleasant Musical Sound Engine (Strictly for Localhost)
+  // ==========================================================================
+  const isLocalhost = Boolean(
+    typeof window !== 'undefined' && (
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname === '[::1]' ||
+      window.location.protocol === 'file:'
+    )
+  );
+
+  let audioCtx = null;
+  let isSoundEnabled = true;
+
+  function getAudioContext() {
+    if (!isLocalhost || !isSoundEnabled) return null;
+    try {
+      if (!audioCtx) {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (AudioCtx) {
+          audioCtx = new AudioCtx();
+        }
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Plays a rich, pleasant harmonic musical chime (fundamental + gentle 2nd harmonic)
+  function playNote(freq, duration = 0.35, type = 'sine', volume = 0.08, delay = 0) {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    try {
+      const startTime = ctx.currentTime + delay;
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+
+      // Warm acoustic low-pass filter to remove harshness
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(3200, startTime);
+
+      osc1.type = type;
+      osc1.frequency.setValueAtTime(freq, startTime);
+
+      // Subtle second harmonic for rich musical bell timbre
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(freq * 2, startTime);
+
+      // Smooth attack and exponential decay envelope
+      gainNode.gain.setValueAtTime(0.0001, startTime);
+      gainNode.gain.exponentialRampToValueAtTime(volume, startTime + 0.015);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+      osc1.connect(filter);
+      osc2.connect(filter);
+      filter.connect(gainNode);
+      gainNode.connect(ctx.destination);
+
+      osc1.start(startTime);
+      osc2.start(startTime);
+      osc1.stop(startTime + duration + 0.05);
+      osc2.stop(startTime + duration + 0.05);
+    } catch (err) {}
+  }
+
+  // Plays a gentle ascending or descending arpeggio / chord
+  function playArpeggio(notes, stagger = 0.06, duration = 0.45, volume = 0.06) {
+    if (!isLocalhost || !isSoundEnabled) return;
+    notes.forEach((freq, idx) => {
+      playNote(freq, duration, 'sine', volume, idx * stagger);
+    });
+  }
+
+  // Soft tactile waterdrop / bubble pop for toggles and switches
+  function playBubblePop() {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    try {
+      const startTime = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(620, startTime);
+      osc.frequency.exponentialRampToValueAtTime(1040, startTime + 0.06);
+
+      gainNode.gain.setValueAtTime(0.0001, startTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.07, startTime + 0.01);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.08);
+
+      osc.connect(gainNode);
+      gainNode.connect(ctx.destination);
+
+      osc.start(startTime);
+      osc.stop(startTime + 0.09);
+    } catch (e) {}
+  }
+
+  // Soft tactile glass tick for row clicks
+  function playGlassTick() {
+    playNote(1174.66, 0.08, 'sine', 0.025);
+  }
+
+  // Pentatonic scale frequencies for preset chips: C5, D5, E5, G5, A5, C6, D6, E6, G6
+  const PRESET_FREQUENCIES = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50, 1174.66, 1318.51, 1567.98];
+
+  function playPresetNote(index) {
+    const freq = PRESET_FREQUENCIES[index % PRESET_FREQUENCIES.length] || 659.25;
+    playNote(freq, 0.4, 'sine', 0.09);
+  }
+
+  function playSuccessChord() {
+    // Celebratory C-E-G-C ascending harp arpeggio
+    playArpeggio([523.25, 659.25, 783.99, 1046.50], 0.05, 0.5, 0.07);
+  }
+
+  function playTabChime() {
+    // Soft acoustic kalimba tap
+    playNote(587.33, 0.28, 'triangle', 0.065);
+  }
+
+  function playActionChime() {
+    // F major gentle chord
+    playArpeggio([698.46, 880.00, 1046.50], 0.04, 0.5, 0.07);
+  }
+
+  function playResetChime() {
+    // Gentle descending cascade
+    playArpeggio([783.99, 659.25, 523.25], 0.05, 0.4, 0.06);
   }
 
   // Convert Indian Numbers to Words
@@ -656,6 +798,7 @@
       `;
 
       tr.addEventListener('click', () => {
+        playGlassTick();
         state.activeInspectorRow = row.ref;
         elements.inspectorCellRef.textContent = `Cell ${row.tag} · ${row.name}`;
         elements.inspectorFormula.textContent = row.formula;
@@ -691,6 +834,7 @@
     `;
 
     totalTr.addEventListener('click', () => {
+      playGlassTick();
       state.activeInspectorRow = 'B24';
       elements.inspectorCellRef.textContent = 'Cell A24 · Total Annual CTC';
       elements.inspectorFormula.textContent = '=B4';
@@ -727,6 +871,7 @@
     `;
 
     bonusTr.addEventListener('click', () => {
+      playGlassTick();
       state.activeInspectorRow = 'B25';
       elements.inspectorCellRef.textContent = 'Cell A25 · Site / Project Bonus';
       elements.inspectorFormula.textContent = 'User input';
@@ -1008,12 +1153,13 @@
 
   // --- COPY SALARY SUMMARY TO CLIPBOARD ---
   function copySalarySummary() {
+    playSuccessChord();
     const m = calculateSalaryModel(state);
     const bonusText = state.projectBonus 
       ? `${formatNumber(state.projectBonus)} or The Amount calculated on the basis of Project completion`
       : 'The Amount calculated on the basis of Project completion';
 
-    const specialPill = state.mathMode === 'excel' ? 'B24-SUM(...)' : 'B24-SUM(B18:B19,B22:B23)';
+    const specialPill = state.mathMode === 'excel' ? 'B24-SUM(B18:B19,B21:B23)' : 'B24-SUM(B18:B19,B22:B23)';
 
     const text = `
 CALCULATED SALARY STRUCTURE
@@ -1181,6 +1327,7 @@ Gross Monthly:        ${formatCurrency(m.grossMonthly)}
 
     // Currency Switcher
     elements.currInrBtn.addEventListener('click', () => {
+      playBubblePop();
       state.currency = 'INR';
       elements.currInrBtn.classList.add('active');
       elements.currUsdBtn.classList.remove('active');
@@ -1189,6 +1336,7 @@ Gross Monthly:        ${formatCurrency(m.grossMonthly)}
     });
 
     elements.currUsdBtn.addEventListener('click', () => {
+      playBubblePop();
       state.currency = 'USD';
       elements.currUsdBtn.classList.add('active');
       elements.currInrBtn.classList.remove('active');
@@ -1196,9 +1344,29 @@ Gross Monthly:        ${formatCurrency(m.grossMonthly)}
       renderAll();
     });
 
+    // Sound Toggle (Strictly for Localhost)
+    if (!isLocalhost && elements.soundToggleBtn) {
+      elements.soundToggleBtn.style.display = 'none';
+    } else if (elements.soundToggleBtn) {
+      elements.soundToggleBtn.addEventListener('click', () => {
+        isSoundEnabled = !isSoundEnabled;
+        if (isSoundEnabled) {
+          elements.soundIcon.textContent = '🔔';
+          elements.soundToggleBtn.classList.remove('muted');
+          elements.soundToggleBtn.title = 'Musical Notes: ON (Localhost Only)';
+          playNote(880, 0.25, 'sine', 0.08);
+        } else {
+          elements.soundIcon.textContent = '🔕';
+          elements.soundToggleBtn.classList.add('muted');
+          elements.soundToggleBtn.title = 'Musical Notes: OFF (Localhost Only)';
+        }
+      });
+    }
+
     // Presets
-    elements.presetChips.forEach(chip => {
+    elements.presetChips.forEach((chip, index) => {
       chip.addEventListener('click', () => {
+        playPresetNote(index);
         elements.presetChips.forEach(c => c.classList.remove('active'));
         chip.classList.add('active');
         state.ctc = Number(chip.getAttribute('data-ctc'));
@@ -1208,6 +1376,7 @@ Gross Monthly:        ${formatCurrency(m.grossMonthly)}
 
     // Reset Defaults (Matches Salary Calculater.xlsx initial values)
     elements.resetDefaultsBtn.addEventListener('click', () => {
+      playResetChime();
       state.ctc = 2000000;
       state.basicPercent = 50;
       state.hraPercent = 40;
@@ -1226,6 +1395,7 @@ Gross Monthly:        ${formatCurrency(m.grossMonthly)}
 
     // Excel File Upload
     elements.importExcelBtn.addEventListener('click', () => {
+      playNote(783.99, 0.28, 'sine', 0.08);
       elements.excelFileInput.click();
     });
 
@@ -1241,27 +1411,37 @@ Gross Monthly:        ${formatCurrency(m.grossMonthly)}
     }
 
     // Excel Export
-    elements.exportExcelBtn.addEventListener('click', exportToExcel);
+    elements.exportExcelBtn.addEventListener('click', () => {
+      playActionChime();
+      exportToExcel();
+    });
 
     // Print & Annexure Modal
     elements.printAnnexureBtn.addEventListener('click', () => {
+      playActionChime();
       elements.annexureModal.classList.remove('hidden');
     });
 
     elements.modalCloseBtn.addEventListener('click', () => {
+      playBubblePop();
       elements.annexureModal.classList.add('hidden');
     });
 
     elements.annexureModal.addEventListener('click', (e) => {
-      if (e.target === elements.annexureModal) elements.annexureModal.classList.add('hidden');
+      if (e.target === elements.annexureModal) {
+        playBubblePop();
+        elements.annexureModal.classList.add('hidden');
+      }
     });
 
     elements.modalPrintBtn.addEventListener('click', () => {
+      playActionChime();
       window.print();
     });
 
     // CTC Annual vs Monthly input toggle
     elements.ctcAnnualToggle.addEventListener('click', () => {
+      playBubblePop();
       if (state.isMonthlyInput) {
         state.isMonthlyInput = false;
         elements.ctcAnnualToggle.classList.add('active');
@@ -1271,6 +1451,7 @@ Gross Monthly:        ${formatCurrency(m.grossMonthly)}
     });
 
     elements.ctcMonthlyToggle.addEventListener('click', () => {
+      playBubblePop();
       if (!state.isMonthlyInput) {
         state.isMonthlyInput = true;
         elements.ctcMonthlyToggle.classList.add('active');
@@ -1322,6 +1503,7 @@ Gross Monthly:        ${formatCurrency(m.grossMonthly)}
     });
 
     elements.hraMetroBtn.addEventListener('click', () => {
+      playBubblePop();
       state.hraPercent = 50;
       elements.hraMetroBtn.classList.add('active');
       elements.hraNonMetroBtn.classList.remove('active');
@@ -1329,6 +1511,7 @@ Gross Monthly:        ${formatCurrency(m.grossMonthly)}
     });
 
     elements.hraNonMetroBtn.addEventListener('click', () => {
+      playBubblePop();
       state.hraPercent = 40;
       elements.hraNonMetroBtn.classList.add('active');
       elements.hraMetroBtn.classList.remove('active');
@@ -1353,10 +1536,12 @@ Gross Monthly:        ${formatCurrency(m.grossMonthly)}
 
     // Statutory Accordion
     elements.statutoryToggleBtn.addEventListener('click', () => {
+      playNote(523.25, 0.2, 'sine', 0.06);
       elements.statutoryAccordion.classList.toggle('open');
     });
 
     elements.pfApplicableCheck.addEventListener('change', (e) => {
+      playBubblePop();
       state.pfApplicable = e.target.checked;
       renderAll();
     });
@@ -1372,6 +1557,7 @@ Gross Monthly:        ${formatCurrency(m.grossMonthly)}
     });
 
     elements.pfHigherWageCheck.addEventListener('change', (e) => {
+      playBubblePop();
       state.pfHigherWage = e.target.checked;
       renderAll();
     });
@@ -1382,17 +1568,26 @@ Gross Monthly:        ${formatCurrency(m.grossMonthly)}
     });
 
     elements.ptApplicableCheck.addEventListener('change', (e) => {
+      playBubblePop();
       state.ptApplicable = e.target.checked;
       renderAll();
     });
 
     elements.taxRegimeSelect.addEventListener('change', (e) => {
+      playBubblePop();
       state.taxRegime = e.target.value;
+      renderAll();
+    });
+
+    elements.mathModeSelect.addEventListener('change', (e) => {
+      playBubblePop();
+      state.mathMode = e.target.value;
       renderAll();
     });
 
     // Auto-fix Wage Code button
     elements.autoFixWageCodeBtn.addEventListener('click', () => {
+      playSuccessChord();
       state.basicPercent = 50;
       renderAll();
     });
@@ -1400,6 +1595,7 @@ Gross Monthly:        ${formatCurrency(m.grossMonthly)}
     // Tabs Navigation
     elements.tabButtons.forEach(btn => {
       btn.addEventListener('click', () => {
+        playTabChime();
         const tabId = btn.getAttribute('data-tab');
         elements.tabButtons.forEach(b => {
           b.classList.remove('active');
